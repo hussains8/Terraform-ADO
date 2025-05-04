@@ -25,21 +25,21 @@ This project creates:
 4. An Azure Kubernetes Service (AKS) cluster
 
 # Prerequisites
-Azure Subscription
-Service Principal with Contributor and User Access Administrator roles
-Azure DevOps Project
-A working Azure DevOps Service Connection to your Azure subscription
+1. Azure Subscription
+2. Service Principal with Contributor and User Access Administrator roles
+3. Azure DevOps Project
+4. A working Azure DevOps Service Connection to your Azure subscription
 
 # Setup Steps for New Joiners
 
-Clone this repository on Local: git clone https://github.com/hussains8/Terraform-ADO.git
-cd Terraform-ADO and you are ready to use this code
+1. Clone this repository on Local: git clone https://github.com/hussains8/Terraform-ADO.git
+2. cd Terraform-ADO and you are ready to use this code
 
 # Configure Service Connection in Azure DevOps
-Go to Project Settings → Service Connections
-Add a new Azure Resource Manager connection
-Grant access to the desired subscription
-Name it something like terraform-azure-connection (referenced in your pipeline)
+1. Go to Project Settings → Service Connections
+2. Add a new Azure Resource Manager connection
+3. Grant access to the desired subscription
+4. Name it something like terraform-azure-connection (referenced in your pipeline)
 
 # Set Up Azure DevOps Variable Group
 In Azure DevOps → Pipelines → Library, create a variable group with:
@@ -55,11 +55,11 @@ runDestroy (optional)	Set to true to destroy resources
 
 # Pipeline Flow (CI/CD)
 When code is pushed to the main branch:
-Terraform init is triggered
-Terraform validate checks your code
-Terraform plan outputs infrastructure changes
-Terraform apply provisions or updates resources
-The pipeline file used is:
+1. Terraform init is triggered
+2. Terraform validate checks your code
+3. Terraform plan outputs infrastructure changes
+4. Terraform apply provisions or updates resources
+5. The pipeline file used is:
 📄 azure-pipelines.yml
 
 # Optional: Destroy Resources
@@ -71,11 +71,11 @@ Skip the usual deployment
 Run terraform destroy
 
 # Tips for New Joiners
-Use the main.tf file to understand resource creation.
-Review variables.tf for required inputs.
-Use outputs.tf to find useful outputs like AKS name or ACR login server.
-Keep sensitive values in Azure DevOps Variable Groups (not in code).
-Always test changes in a personal branch before merging into main.
+1. Use the main.tf file to understand resource creation.
+2. Review variables.tf for required inputs.
+3. Use outputs.tf to find useful outputs like AKS name or ACR login server.
+4. Keep sensitive values in Azure DevOps Variable Groups (not in code).
+5. Always test changes in a personal branch before merging into main.
 
 # Maintainers
 For access, onboarding help, or debugging:
