@@ -79,6 +79,6 @@ Run terraform destroy
 
 # Maintainers
 For access, onboarding help, or debugging:
-Contact: [Sadaf Hussain - Lead DevOps]
-Email: sadaf.official964@gmail.com
+1. Contact: [Sadaf Hussain - Lead DevOps]
+2. Email: sadaf.official964@gmail.com
 
