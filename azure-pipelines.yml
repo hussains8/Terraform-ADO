@@ -1,0 +1,88 @@
+trigger:
+- main
+
+variables:
+  bkstrgrp: 'aa-terraform-rg'
+  bkstrg: 'trainingsto'
+  bkcontainer: 'tfstate'
+  bkstrgkey: 'devpipeline.terraform.tfstate'
+  terraformWorkingDirectory: 'terraform'
+  tfServiceConnection: 'Terraform-Service-Connection'
+  runDestroy: 'false'  # 👈 Change to 'true' to run destroy
+
+stages:
+- stage: TerraformAll
+  displayName: 'Terraform All Steps (Init → Validate → Plan → Apply or Destroy)'
+  jobs:
+  - deployment: terraformJob
+    displayName: 'Run on Environment VM'
+    environment:
+      name: dev-test
+      resourceName: aadopagent-vm
+      resourceType: virtualMachine
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+            - checkout: self
+
+            - script: |
+                echo "Installing unzip..."
+                sudo apt-get update
+                sudo apt-get install -y unzip
+              displayName: 'Install unzip (required by TerraformInstaller)'
+
+            - task: TerraformInstaller@1
+              displayName: 'Install Terraform'
+              inputs:
+                terraformVersion: 'latest'
+
+            - task: TerraformTask@5
+              displayName: 'Terraform Init'
+              inputs:
+                provider: 'azurerm'
+                command: 'init'
+                workingDirectory: '$(System.DefaultWorkingDirectory)/$(terraformWorkingDirectory)'
+                backendServiceArm: '$(tfServiceConnection)'
+                backendAzureRmResourceGroupName: '$(bkstrgrp)'
+                backendAzureRmStorageAccountName: '$(bkstrg)'
+                backendAzureRmContainerName: '$(bkcontainer)'
+                backendAzureRmKey: '$(bkstrgkey)'
+
+            # ✅ Destroy step (runs only if runDestroy == 'true')
+            - ${{ if eq(variables['runDestroy'], 'true') }}:
+              - task: TerraformTask@5
+                displayName: 'Terraform Destroy'
+                inputs:
+                  provider: 'azurerm'
+                  command: 'destroy'
+                  commandOptions: '-auto-approve'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/$(terraformWorkingDirectory)'
+                  environmentServiceNameAzureRM: '$(tfServiceConnection)'
+
+            # ✅ Plan + Apply flow (only runs if runDestroy != 'true')
+            - ${{ if ne(variables['runDestroy'], 'true') }}:
+              - task: TerraformTask@5
+                displayName: 'Terraform Validate'
+                inputs:
+                  provider: 'azurerm'
+                  command: 'validate'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/$(terraformWorkingDirectory)'
+
+              - task: TerraformTask@5
+                displayName: 'Terraform Plan'
+                inputs:
+                  provider: 'azurerm'
+                  command: 'plan'
+                  commandOptions: '-out=tfplan'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/$(terraformWorkingDirectory)'
+                  environmentServiceNameAzureRM: '$(tfServiceConnection)'
+
+              - task: TerraformTask@5
+                displayName: 'Terraform Apply'
+                inputs:
+                  provider: 'azurerm'
+                  command: 'apply'
+                  commandOptions: 'tfplan'
+                  workingDirectory: '$(System.DefaultWorkingDirectory)/$(terraformWorkingDirectory)'
+                  environmentServiceNameAzureRM: '$(tfServiceConnection)'
