@@ -19,10 +19,10 @@ All infrastructure code is located in this GitHub repository:
 
 # What This Deploys
 This project creates:
-A Resource Group for all Azure resources
-A Virtual Network and Subnet
-An Azure Container Registry (ACR)
-An Azure Kubernetes Service (AKS) cluster
+1. A Resource Group for all Azure resources
+2. A Virtual Network and Subnet
+3. An Azure Container Registry (ACR)
+4. An Azure Kubernetes Service (AKS) cluster
 
 # Prerequisites
 Azure Subscription
